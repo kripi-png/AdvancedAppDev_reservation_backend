@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  api_service:
+    build: .
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - springapimysql-net
+    environment:
+      - DB_HOST=mysqldb
+    depends_on:
+      - mysqldb
+    volumes:
+      - .m2:/root/.m2
+  
+  mysqldb:
+    image: mysql:8.0
+    restart: always
+#    ports:
+#      - 3307:3306
+    networks:
+      - springapimysql-net
+    environment:
+      MYSQL_DATABASE: db_reservation
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - "./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1.sql"
+      - "./src/main/resources/data.sql:/docker-entrypoint-initdb.d/2.sql"
+
+networks:
+  springapimysql-net:
