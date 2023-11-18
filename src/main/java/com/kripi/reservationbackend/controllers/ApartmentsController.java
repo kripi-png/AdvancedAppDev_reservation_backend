@@ -2,14 +2,12 @@ package com.kripi.reservationbackend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.kripi.reservationbackend.ApartmentRepository;
 import com.kripi.reservationbackend.entities.Apartment;
+
+import java.util.Optional;
 
 @Controller
 @RequestMapping(path="/apartments")
@@ -26,7 +24,12 @@ public class ApartmentsController {
     public @ResponseBody Iterable<Apartment> getAllApartments() {
         return (Iterable<Apartment>) apartmentRepository.findAll();
     }
-	
+
+	@GetMapping("/{id}")
+	public @ResponseBody Optional<Apartment> getApartmentById(@PathVariable Integer id) {
+        return apartmentRepository.findById(id);
+	}
+
 	// POST /apartments
 	@PostMapping
 	public @ResponseBody String createNewApartment (
@@ -65,6 +68,4 @@ public class ApartmentsController {
 		apartmentRepository.save(apartment);
 		return "Saved";
 	}
-	
-	
 }
