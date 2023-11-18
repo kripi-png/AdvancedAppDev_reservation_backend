@@ -1,3 +1,4 @@
+
 # AdvancedAppDev Reservation Backend
 
 ## Prerequisites
@@ -5,11 +6,20 @@ Before starting, make sure you have the following tools installed on your machin
 - Maven
 - MySQL Workbench or MySQL Shell
 - Docker (Desktop for Windows)
+- Lombok plugin for IDE of choice
+  - For IntelliJ IDEA, [check here](https://www.baeldung.com/lombok-ide)
+  - For Eclipse:
+    - Download latest Lombok jar from [Maven Central](https://mvnrepository.com/artifact/org.projectlombok/lombok)
+    - Run the jarfile with the command `java -jar lombok.x.x.x.jar`
+    - Restart eclipse
 
 ## 1. Database setup
 1.1 Use either MySQL Workbench or the CLI to create a database named db_reservation.
 
 1.2  Execute the `/src/main/resources/schema.sql` script to generate the necessary tables for the database.
+  - This can be done in MySQL Workbench by selecting the folder icon in the SQL Editor view
+  - Alernatively, connect to the databse with MySQL Shell and run command `SOURCE ./path/to/schema.sql`
+  - Both approaches may require dropping the tables (or the entire database) and then recreating the database before running the script.
 
 (1.3) Optionally, run the `/src/main/resources/init.sql` script to populate the database with mock data.
 

@@ -1,31 +1,57 @@
 package com.kripi.reservationbackend.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
+@Table(name="apartments")
+@Data
 public class Apartment {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name = "apartmentId", nullable=false)
+    private Integer apartmentId;
 	
-	private Integer id;
-	private String name;
+	@Column(name="ownerId", nullable=false)
+	private Integer ownerId;
 	
-	public Integer getId() {
-		return id;
-	}
+	@Column(name="rentAmount", nullable=false)
+	private Float rentAmount; // in euros
 	
-	public void setId(Integer id) {
-		this.id = id;
-	}
+	@Column(name="area", nullable=false)
+	private Float area; // m2
 	
-	public String getName() {
-		return name;
-	}
+	@Column(name="apartmentType", nullable=false)
+	private String type;
 	
-	public void setName(String name) {
-		this.name = name;
-	}
+	/* ADDRESS COLUMNS */
+	@Column(name="streetName", length=45)
+	private String streetName;
+	
+	@Column(name="cityName", length=45)
+	private String cityName;
+	
+	@Column(name="postalCode", length=10)
+	private String postalCode;
+	
+	@Column(name="apartmentNumber", length=10)
+	private String apartmentNumber;
+	
+	/* ROOMS */
+	@Column(name="roomNormalCount")
+	private Integer roomNormalCount;
+	
+	@Column(name="roomKitchenCount")
+	private Integer roomKitchenCount;
+	
+	@Column(name="roomBalconyCount")
+	private Integer roomBalconyCount;
+	
+	@Column(name="roomBathroomCount")
+	private Integer roomBathroomCount;
 }
