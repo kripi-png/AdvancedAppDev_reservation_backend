@@ -1,15 +1,11 @@
-package com.kripi.reservationbackend.controllers;
+package com.kripi.reservationbackend.apartment;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import com.kripi.reservationbackend.ApartmentRepository;
-import com.kripi.reservationbackend.entities.Apartment;
 
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequestMapping(path="/apartments")
 public class ApartmentsController {
 	
@@ -63,8 +59,8 @@ public class ApartmentsController {
 		apartment.setRoomBathroomCount(roomNormalCount);
 		apartment.setRoomKitchenCount(roomKitchenCount);
 		apartment.setRoomBalconyCount(roomBalconyCount);
-		apartment.setRoomBathroomCount(roomBathroomCount);		
-		
+		apartment.setRoomBathroomCount(roomBathroomCount);
+
 		apartmentRepository.save(apartment);
 		return "Saved";
 	}
