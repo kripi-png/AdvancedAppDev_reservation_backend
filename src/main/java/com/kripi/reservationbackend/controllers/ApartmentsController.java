@@ -22,7 +22,7 @@ public class ApartmentsController {
 
     @GetMapping
     public @ResponseBody Iterable<Apartment> getAllApartments() {
-        return (Iterable<Apartment>) apartmentRepository.findAll();
+        return apartmentRepository.findAll();
     }
 
 	@GetMapping("/{id}")
