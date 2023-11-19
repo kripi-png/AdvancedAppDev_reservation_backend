@@ -1,5 +1,6 @@
 
 
+
 # AdvancedAppDev Reservation Backend
 
 ## Prerequisites
@@ -8,7 +9,7 @@ Before starting, make sure you have the following tools installed on your machin
 - MySQL Workbench or MySQL Shell
 - Docker (Desktop for Windows)
 - Lombok plugin for IDE of choice
-  - For IntelliJ IDEA
+  - For IntelliJ IDEA (recommended)
     - Go to "Preferences" > "Plugins" > "Browse repositories" > Search for "Lombok" > Install and restart IntelliJ IDEA.
   - For Eclipse:
     - Download latest Lombok jar from [Maven Central](https://mvnrepository.com/artifact/org.projectlombok/lombok)
@@ -34,6 +35,7 @@ Before starting, make sure you have the following tools installed on your machin
 2.2.1 Navigate to `/src/main/resources`
 
 2.2.2 Run the following commands
+- Note: OpenSSL does not work natively on Windows. Consider using Windows Subsystem for Linux (WSL) to run these commands. If you haven't set up WSL, you can follow [these instructions](https://learn.microsoft.com/en-us/windows/wsl/install) to install and configure it on your Windows machine.
 ```sh
 openssl genrsa -out app.key 2048
 openssl rsa -in app.key -pubout -outform PEM -out app.pub
