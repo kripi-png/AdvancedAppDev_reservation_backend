@@ -12,7 +12,7 @@
 	<artifactId>reservation-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>reservation-backend</name>
-	<description>Backend for a rental application application for Advanced Application Development course in 2023</description>
+	<description>Spring Boot backend API for a rental apartment application. Final project for an Advanced Application Development course.</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -24,6 +24,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
