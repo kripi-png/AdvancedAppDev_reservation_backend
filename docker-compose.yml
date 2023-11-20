@@ -1,13 +1,13 @@
 version: "3"
 
 services:
-  api_service:
+  backend:
     build: .
     restart: always
     ports:
       - "8080:8080"
     networks:
-      - springapimysql-net
+      - advappdev_reservation-net
     environment:
       - DB_HOST=mysqldb
     depends_on:
@@ -19,7 +19,7 @@ services:
     image: mysql:8.0
     restart: always
     networks:
-      - springapimysql-net
+      - advappdev_reservation-net
     environment:
       MYSQL_DATABASE: db_reservation
       MYSQL_ROOT_PASSWORD: root
@@ -30,4 +30,5 @@ services:
       - ./src/main/resources/init.sql:/docker-entrypoint-initdb.d/2.sql
 
 networks:
-  springapimysql-net:
+  advappdev_reservation-net:
+    external: true
