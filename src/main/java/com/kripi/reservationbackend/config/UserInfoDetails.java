@@ -30,12 +30,12 @@ public class UserInfoDetails implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return null;
+    public String getUsername() {
+        return username;
     }
 
     @Override
-    public String getUsername() {
+    public String getPassword() {
         return password;
     }
 

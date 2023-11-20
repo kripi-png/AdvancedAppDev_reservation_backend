@@ -24,11 +24,13 @@ public class UserInfoService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<UserInfo> userDetail = repository.findByUsername(username);
-        System.out.println("USER " + userDetail.toString());
+        System.out.println("UserInfoService.java USER " + userDetail.toString());
 
         // convert userDetail to UserDetails
-        return userDetail.map(UserInfoDetails::new)
+        UserInfoDetails userInfoDetails = userDetail.map(UserInfoDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found " + username));
+        System.out.println("UserInfoService.java USER INFO DETAILS username " + userInfoDetails.getUsername() + " password " + userInfoDetails.getPassword());
+        return userInfoDetails;
     }
 
     public String addUser(UserInfo userInfo) {
