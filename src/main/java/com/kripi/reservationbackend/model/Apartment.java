@@ -1,4 +1,4 @@
-package com.kripi.reservationbackend.apartment;
+package com.kripi.reservationbackend.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

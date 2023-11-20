@@ -1,6 +1,7 @@
-package com.kripi.reservationbackend.apartment;
+package com.kripi.reservationbackend.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kripi.reservationbackend.model.Apartment;
+import com.kripi.reservationbackend.repository.ApartmentRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -8,13 +9,13 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path="/apartments")
 public class ApartmentsController {
-	
-	private final ApartmentRepository apartmentRepository;
 
-    @Autowired
+	private ApartmentRepository apartmentRepository;
+
+    /*@Autowired
     public ApartmentsController(ApartmentRepository apartmentRepository) {
         this.apartmentRepository = apartmentRepository;
-    }
+    }*/
 
     @GetMapping
     public @ResponseBody Iterable<Apartment> getAllApartments() {

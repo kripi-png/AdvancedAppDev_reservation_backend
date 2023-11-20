@@ -1,6 +1,5 @@
-package com.kripi.reservationbackend.token;
+package com.kripi.reservationbackend.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -15,7 +14,6 @@ import java.util.stream.Collectors;
 @RestController
 public class TokenController {
 
-    @Autowired
     JwtEncoder encoder;
 
     @PostMapping("/token")
