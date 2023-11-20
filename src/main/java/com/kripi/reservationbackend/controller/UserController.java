@@ -28,18 +28,14 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @GetMapping("/welcome")
-    public String welcome() {
-        return "Hello, this endpoint is not secure";
-    }
-
-    @PostMapping("/addNewUser")
+    @PostMapping("/register")
     public String addNewUser(@RequestBody UserInfo userInfo) {
+        /* Accepts username, password, and list of roles
+        * if username already exists in database, cancel
+        * otherwise save user to database */
         try {
-            /*
-                service.loadUserByUsername throws UsernameNotFoundException if user does not exist
-                therefore, we can cancel if it succeeds and create a new user if it throws
-            */
+            /* service.loadUserByUsername throws UsernameNotFoundException if user does not exist
+            * therefore, we can cancel if it succeeds and create a new user if it throws */
             UserDetails userDetails = service.loadUserByUsername(userInfo.getUsername());
             System.out.println("Username already exists " + userDetails.getUsername());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists!");
@@ -47,6 +43,17 @@ public class UserController {
             /* If loadUserByUsername threw UsernameNotFoundException, create new error*/
             System.out.println("New user submission: " + userInfo.getUsername());
             return service.addUser(userInfo);
+        }
+    }
+
+    @PostMapping("/login")
+    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+        /* Returns a JWT token for provided username and password */
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+        if (authentication.isAuthenticated()) {
+            return jwtService.generateToken(authRequest.getUsername());
+        } else {
+            throw new UsernameNotFoundException("User not found with credentials");
         }
     }
 
@@ -62,13 +69,4 @@ public class UserController {
         return "Welcome to Admin Profile";
     }
 
-    @PostMapping("/generateToken")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUsername());
-        } else {
-            throw new UsernameNotFoundException("User not found with credentials");
-        }
-    }
 }
