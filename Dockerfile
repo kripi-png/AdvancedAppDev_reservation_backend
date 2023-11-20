@@ -1,17 +1,21 @@
 #
 # Build stage
 #
-FROM eclipse-temurin:17-jdk-jammy AS build
+FROM maven:3.8.5-openjdk-17-slim AS build
 ENV HOME=/usr/app
 RUN mkdir -p $HOME
 WORKDIR $HOME
-COPY . $HOME
+
+COPY pom.xml .
+COPY src ./src
+
 # Generate public and private keys for JWT
 ENV RESOURCES=/$HOME/src/main/resources
 RUN openssl genrsa -out $RESOURCES/app.key 2048
 RUN openssl rsa -in $RESOURCES/app.key -pubout -outform PEM -out $RESOURCES/app.pub
+
 # Build the project
-RUN --mount=type=cache,target=/root/.m2 ./mvnw -f $HOME/pom.xml clean package
+RUN mvn clean package -DskipTests
 
 #
 # Package stage
