@@ -9,11 +9,6 @@ WORKDIR $HOME
 COPY pom.xml .
 COPY src ./src
 
-# Generate public and private keys for JWT
-ENV RESOURCES=/$HOME/src/main/resources
-RUN openssl genrsa -out $RESOURCES/app.key 2048
-RUN openssl rsa -in $RESOURCES/app.key -pubout -outform PEM -out $RESOURCES/app.pub
-
 # Build the project
 RUN mvn clean package -DskipTests
 
