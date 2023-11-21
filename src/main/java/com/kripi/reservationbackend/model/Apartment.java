@@ -1,11 +1,7 @@
 package com.kripi.reservationbackend.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.kripi.reservationbackend.utils.ApartmentType;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -25,9 +21,10 @@ public class Apartment {
 	
 	@Column(name="area", nullable=false)
 	private Float area; // m2
-	
+
+	@Enumerated(EnumType.STRING)
 	@Column(name="apartmentType", nullable=false)
-	private String type;
+	private ApartmentType type;
 	
 	/* ADDRESS COLUMNS */
 	@Column(name="streetName", length=45)

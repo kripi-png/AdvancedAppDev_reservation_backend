@@ -5,6 +5,7 @@ import com.kripi.reservationbackend.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -39,9 +40,17 @@ public class RestConfig {
         return http
                 .authorizeHttpRequests(
                         auth -> auth
-                                /* allow requests to /auth/register and /auth/login without authentication */
+                                /* AUTHENTICATION `/auth` */
+                                // registration and login must not require auth for somewhat obvious reasons
                                 .requestMatchers("/auth/register", "/auth/login").permitAll()
-                                /* block all other requests without authentication */
+
+                                /* APARTMENT REQUESTS `/apartments` */
+                                // allow viewing without authentication
+                                .requestMatchers(HttpMethod.GET, "/apartments", "apartments/*").permitAll()
+                                // require auth for creating new apartment
+                                .requestMatchers(HttpMethod.POST, "/apartments").authenticated()
+
+                                /* EVERYTHING ELSE */
                                 .requestMatchers("/auth/user/**").authenticated()
                                 .requestMatchers("/auth/admin/**").authenticated()
                                 .anyRequest().authenticated()

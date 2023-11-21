@@ -19,10 +19,10 @@ CREATE TABLE apartments (
   apartmentNumber VARCHAR(10),
 
   -- rooms
-  roomNormalCount INTEGER,
-  roomKitchenCount INTEGER,
-  roomBalconyCount INTEGER,
-  roomBathroomCount INTEGER,
+  roomNormalCount INTEGER DEFAULT 0,
+  roomKitchenCount INTEGER DEFAULT 0,
+  roomBalconyCount INTEGER DEFAULT 0,
+  roomBathroomCount INTEGER DEFAULT 0,
   
   PRIMARY KEY (apartmentId),
   FOREIGN KEY (ownerId) REFERENCES users (userId) ON DELETE CASCADE

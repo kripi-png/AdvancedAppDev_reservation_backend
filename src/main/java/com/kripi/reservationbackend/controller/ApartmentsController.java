@@ -1,7 +1,14 @@
 package com.kripi.reservationbackend.controller;
 
+import com.kripi.reservationbackend.config.ApiResponse;
+import com.kripi.reservationbackend.config.UserInfoDetails;
 import com.kripi.reservationbackend.model.Apartment;
 import com.kripi.reservationbackend.repository.ApartmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -10,59 +17,49 @@ import java.util.Optional;
 @RequestMapping(path="/apartments")
 public class ApartmentsController {
 
-	private ApartmentRepository apartmentRepository;
+	private final ApartmentRepository apartmentRepository;
 
-    /*@Autowired
+    @Autowired
     public ApartmentsController(ApartmentRepository apartmentRepository) {
         this.apartmentRepository = apartmentRepository;
-    }*/
+    }
 
     @GetMapping
+	// GET /apartments
     public @ResponseBody Iterable<Apartment> getAllApartments() {
-        return apartmentRepository.findAll();
+		return apartmentRepository.findAll();
     }
 
 	@GetMapping("/{id}")
+	// GET /apartments/:id
 	public @ResponseBody Optional<Apartment> getApartmentById(@PathVariable Integer id) {
         return apartmentRepository.findById(id);
 	}
 
-	// POST /apartments
 	@PostMapping
-	public @ResponseBody String createNewApartment (
-		@RequestParam Integer ownerId,
-		@RequestParam Float rent,
-		@RequestParam Float area,
-		@RequestParam String type,
-		@RequestParam(required = false) String street,
-		@RequestParam(required = false) String city,
-		@RequestParam(required = false) String postalCode,
-		@RequestParam(required = false) String apartmentNumber,
-		@RequestParam(required = false) Integer roomNormalCount,
-		@RequestParam(required = false) Integer roomKitchenCount,
-		@RequestParam(required = false) Integer roomBalconyCount,
-		@RequestParam(required = false) Integer roomBathroomCount
-	) {
-		// @ResponseBody dictates that the response is of certain type and not a view name
-		// @RequestParam defines accepted request parameters
+	// POST /apartments
+	public ResponseEntity<ApiResponse<Apartment>> createNewApartment (@RequestBody Apartment apartmentData, Authentication authentication) {
+		try {
+			/* Set current user as the owner for the apartment */
+			UserInfoDetails user = (UserInfoDetails) authentication.getPrincipal();
+			apartmentData.setOwnerId(user.getId());
+			Apartment apartment = apartmentRepository.save(apartmentData);
+			return ResponseEntity
+					.ok(new ApiResponse<>(true, apartment));
+		} catch (DataIntegrityViolationException e) {
+			String missingFields = "";
+			if (apartmentData.getOwnerId() == null) missingFields = "ownerId";
+			else if (apartmentData.getRentAmount() == null) missingFields = "rentAmount";
+			else if (apartmentData.getArea() == null) missingFields = "area";
+			else if (apartmentData.getType() == null) missingFields = "type";
 
-		Apartment apartment = new Apartment();
-		apartment.setOwnerId(ownerId);
-		apartment.setRentAmount(rent);
-		apartment.setArea(area);
-		apartment.setType(type);
-		// location
-		apartment.setStreetName(street);
-		apartment.setCityName(city);
-		apartment.setPostalCode(postalCode);
-		apartment.setApartmentNumber(apartmentNumber);
-		// rooms
-		apartment.setRoomBathroomCount(roomNormalCount);
-		apartment.setRoomKitchenCount(roomKitchenCount);
-		apartment.setRoomBalconyCount(roomBalconyCount);
-		apartment.setRoomBathroomCount(roomBathroomCount);
-
-		apartmentRepository.save(apartment);
-		return "Saved";
+			System.out.println("Missing data when creating an apartment: " + e);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiResponse<>(false, "Failed to create an apartment: one or more required field was missing a value: " + missingFields));
+		} catch (Exception e) {
+			System.out.println("Unknown exception when creating an apartment: " + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ApiResponse<>(false, "Failed to create an apartment."));
+		}
 	}
 }
