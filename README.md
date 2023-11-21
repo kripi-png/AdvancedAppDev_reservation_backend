@@ -16,6 +16,8 @@ Before starting, make sure you have the following tools installed on your machin
     - Run the jarfile with the command `java -jar lombok.x.x.x.jar`
     - Restart eclipse
 
+## Note: If you are going to be working on frontend only, you can skip to step 3
+
 ## 1. Database setup
 1.1 Use either MySQL Workbench or the CLI to create a database named db_reservation.
 
@@ -62,9 +64,22 @@ Replace [filename] with the actual JAR file name, e.g., reservation-backend-0.0.
 2.5 Access the backend at http://localhost:8080
 
 ## 3. Docker setup
-3.1 Build the Docker images and start containers for MySQL and the Java API using
-```sh
-docker-compose up
+### 3.1 Create a docker network for backend/frontend communcation
+```shell
+docker network create advappdev_reservation-net
+```
+### 3.2 Initial Setup (First Time or After Pulling New Changes)
+When setting up Docker for the first time or after pulling new changes, you must build/rebuild the images.
+```shell
+docker compose down --remove-orphans
+docker compose up -d --build
+```
+### 3.3 Start the container
+When starting the container again, use the following command:
+```shell
+docker compose up -d
 ```
 
-3.2 Access the backend at http://localhost:8080
+### 3.4 Access the Backend
+Access the backend at http://localhost:8080.
+Note that the page may say that you are **not authorized** to view the contents. **This still means that it works**, however.
