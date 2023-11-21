@@ -1,6 +1,7 @@
 package com.kripi.reservationbackend.controller;
 
 import com.kripi.reservationbackend.config.AuthRequest;
+import com.kripi.reservationbackend.config.UserInfoDetails;
 import com.kripi.reservationbackend.service.JwtService;
 import com.kripi.reservationbackend.model.UserInfo;
 import com.kripi.reservationbackend.service.UserInfoService;
@@ -14,6 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -51,7 +55,9 @@ public class UserController {
         /* Returns a JWT token for provided username and password */
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUsername());
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("id", ((UserInfoDetails) authentication.getPrincipal()).getId());
+            return jwtService.generateToken(authRequest.getUsername(), claims);
         } else {
             throw new UsernameNotFoundException("User not found with credentials");
         }

@@ -1,6 +1,7 @@
 package com.kripi.reservationbackend.config;
 
 import com.kripi.reservationbackend.model.UserInfo;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,11 +13,14 @@ import java.util.stream.Collectors;
 
 public class UserInfoDetails implements UserDetails {
 
-    private String username;
-    private String password;
-    private List<GrantedAuthority> authorities;
+    @Getter
+    private final Integer id;
+    private final String username;
+    private final String password;
+    private final List<GrantedAuthority> authorities;
 
     public UserInfoDetails(UserInfo userInfo) {
+        id = userInfo.getUserId();
         username = userInfo.getUsername();
         password = userInfo.getPassword();
         authorities = Arrays.stream(userInfo.getRoles().split(","))
@@ -58,4 +62,5 @@ public class UserInfoDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }
