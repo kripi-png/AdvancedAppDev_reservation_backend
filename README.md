@@ -23,7 +23,7 @@ Before starting, make sure you have the following tools installed on your machin
 
 1.2  Execute the `/src/main/resources/schema.sql` script to generate the necessary tables for the database.
   - This can be done in MySQL Workbench by selecting the folder icon in the SQL Editor view
-  - Alernatively, connect to the databse with MySQL Shell and run command `SOURCE ./path/to/schema.sql`
+  - Alternatively, connect to the database with MySQL Shell and run command `SOURCE ./path/to/schema.sql`
   - Both approaches may require dropping the tables (or the entire database) and then recreating the database before running the script.
 
 (1.3) Optionally, run the `/src/main/resources/init.sql` script to populate the database with mock data.
@@ -51,7 +51,7 @@ Replace [filename] with the actual JAR file name, e.g., reservation-backend-0.0.
 2.4 Access the backend at http://localhost:8080
 
 ## 3. Docker setup
-### 3.1 Create a docker network for backend/frontend communcation
+### 3.1 Create a docker network for backend/frontend communication
 ```shell
 docker network create advappdev_reservation-net
 ```

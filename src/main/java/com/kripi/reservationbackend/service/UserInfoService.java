@@ -22,14 +22,14 @@ public class UserInfoService implements UserDetailsService {
     private PasswordEncoder encoder;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserInfo> userDetail = repository.findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<UserInfo> userDetail = repository.findByEmail(email);
         System.out.println("UserInfoService.java USER " + userDetail.toString());
 
         // convert userDetail to UserDetails
         UserInfoDetails userInfoDetails = userDetail.map(UserInfoDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found " + username));
-        System.out.println("UserInfoService.java USER INFO DETAILS username " + userInfoDetails.getUsername() + " password " + userInfoDetails.getPassword());
+                .orElseThrow(() -> new UsernameNotFoundException("User not found " + email));
+        System.out.println("UserInfoService.java USER INFO DETAILS email " + userInfoDetails.getUsername() + " password " + userInfoDetails.getPassword());
         return userInfoDetails;
     }
 

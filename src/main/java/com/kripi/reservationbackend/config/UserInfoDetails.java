@@ -15,17 +15,23 @@ public class UserInfoDetails implements UserDetails {
 
     @Getter
     private final Integer id;
-    private final String username;
+    private final String email;
     private final String password;
+    @Getter
+    private final String firstName;
+    @Getter
+    private final String lastName;
     private final List<GrantedAuthority> authorities;
 
     public UserInfoDetails(UserInfo userInfo) {
         id = userInfo.getUserId();
-        username = userInfo.getUsername();
+        email = userInfo.getEmail();
         password = userInfo.getPassword();
         authorities = Arrays.stream(userInfo.getRoles().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+        firstName = userInfo.getFirstName();
+        lastName = userInfo.getLastName();
     }
 
     @Override
@@ -35,7 +41,7 @@ public class UserInfoDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override

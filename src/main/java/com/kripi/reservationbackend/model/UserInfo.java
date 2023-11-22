@@ -16,12 +16,18 @@ public class UserInfo {
     @Column(name = "userId", nullable = false)
     private Integer userId;
 
-    @Column(name = "username", nullable = false)
-    private String username;
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "roles", nullable = false)
+    @Column(name = "firstName", nullable = false)
+    private String firstName;
+
+    @Column(name = "lastName", nullable = false)
+    private String  lastName;
+
+    @Column(name = "roles")
     private String roles;
 }

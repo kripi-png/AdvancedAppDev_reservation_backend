@@ -1,5 +1,5 @@
 -- users
-INSERT INTO users (username, password, roles) VALUES ("admin", "$2a$10$SzHo3dWv01JcuYlBFPjh0.ZLdN.EC1qUFpPCeegzAhdaHjL99l/Ay", "ROLE_ADMIN");
+INSERT INTO users (email, password, firstName, lastName, roles) VALUES ("admin@gmail.com", "$2a$10$SzHo3dWv01JcuYlBFPjh0.ZLdN.EC1qUFpPCeegzAhdaHjL99l/Ay", "admin", "admin", "ROLE_ADMIN");
 
 -- apartments
 INSERT INTO apartments (ownerId, rentAmount, area, apartmentType)
