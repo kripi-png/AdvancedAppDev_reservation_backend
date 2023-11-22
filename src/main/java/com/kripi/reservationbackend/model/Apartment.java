@@ -5,17 +5,18 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name="apartments")
+@Table(name = "apartments")
 @Data
 public class Apartment {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "apartmentId", nullable=false)
     private Integer apartmentId;
-	
-	@Column(name="ownerId", nullable=false)
-	private Integer ownerId;
-	
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "ownerId", nullable = false)
+	private UserInfo owner;
+
 	@Column(name="rentAmount", nullable=false)
 	private Float rentAmount; // in euros
 	

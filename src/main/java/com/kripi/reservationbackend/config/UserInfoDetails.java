@@ -23,7 +23,11 @@ public class UserInfoDetails implements UserDetails {
     private final String lastName;
     private final List<GrantedAuthority> authorities;
 
+    @Getter
+    private final UserInfo userInfo;
+
     public UserInfoDetails(UserInfo userInfo) {
+        this.userInfo = userInfo;
         id = userInfo.getUserId();
         email = userInfo.getEmail();
         password = userInfo.getPassword();

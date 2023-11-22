@@ -3,8 +3,8 @@ package com.kripi.reservationbackend.controller;
 import com.kripi.reservationbackend.config.ApiResponse;
 import com.kripi.reservationbackend.config.UserInfoDetails;
 import com.kripi.reservationbackend.model.Apartment;
+import com.kripi.reservationbackend.model.UserInfo;
 import com.kripi.reservationbackend.repository.ApartmentRepository;
-import com.kripi.reservationbackend.utils.ApartmentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 @RestController
@@ -29,7 +28,7 @@ public class ApartmentsController {
     @GetMapping
 	// GET /apartments
     public @ResponseBody Iterable<Apartment> getAllApartments() {
-		return apartmentRepository.findAll();
+        return apartmentRepository.findAll();
     }
 
 	@GetMapping("/{id}")
@@ -43,14 +42,15 @@ public class ApartmentsController {
 	public ResponseEntity<ApiResponse<Apartment>> createNewApartment (@RequestBody Apartment apartmentData, Authentication authentication) {
 		try {
 			/* Set current user as the owner for the apartment */
-			UserInfoDetails user = (UserInfoDetails) authentication.getPrincipal();
-			apartmentData.setOwnerId(user.getId());
+			UserInfoDetails userInfoDetails = (UserInfoDetails) authentication.getPrincipal();
+			UserInfo user = userInfoDetails.getUserInfo();
+			apartmentData.setOwner(user);
 			Apartment apartment = apartmentRepository.save(apartmentData);
 			return ResponseEntity
 					.ok(new ApiResponse<>(true, apartment));
 		} catch (DataIntegrityViolationException e) {
 			String missingFields = "";
-			if (apartmentData.getOwnerId() == null) missingFields = "ownerId";
+			if (apartmentData.getOwner() == null) missingFields = "ownerId";
 			else if (apartmentData.getRentAmount() == null) missingFields = "rentAmount";
 			else if (apartmentData.getArea() == null) missingFields = "area";
 			else if (apartmentData.getApartmentType() == null) missingFields = "apartmentType";

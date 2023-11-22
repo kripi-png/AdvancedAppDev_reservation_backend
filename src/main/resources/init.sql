@@ -2,9 +2,9 @@
 INSERT INTO users (userId, email, password, firstName, lastName, roles)
 VALUES
     (1, "admin@gmail.com", "$2a$10$SzHo3dWv01JcuYlBFPjh0.ZLdN.EC1qUFpPCeegzAhdaHjL99l/Ay", "admin", "admin", "ROLE_ADMIN"),
-    (2, 'user2@example.com', 'password123', 'John', 'Doe'),
-    (3, 'user3@example.com', 'securepass', 'Alice', 'Smith'),
-    (4, 'user4@example.com', 'myp@ssw0rd', 'Bob', 'Johnson');
+    (2, 'user2@example.com', 'password123', 'John', 'Doe', "ROLE_USER"),
+    (3, 'user3@example.com', 'securepass', 'Alice', 'Smith', "ROLE_USER"),
+    (4, 'user4@example.com', 'myp@ssw0rd', 'Bob', 'Johnson', "ROLE_USER");
 
 -- apartments
 INSERT INTO apartments (ownerId, rentAmount, area, apartmentType, streetName, cityName, postalCode, apartmentNumber, roomNormalCount, roomKitchenCount, roomBalconyCount, roomBathroomCount, description)
