@@ -56,9 +56,9 @@ Replace [filename] with the actual JAR file name, e.g., reservation-backend-0.0.
 docker network create advappdev_reservation-net
 ```
 ### 3.2 Initial Setup (First Time or After Pulling New Changes)
-When setting up Docker for the first time or after pulling new changes, you must build/rebuild the images.
+When setting up Docker for the first time or after pulling new changes, you must remove volumes and build/rebuild the images.
 ```shell
-docker compose down --remove-orphans
+docker compose down --remove-orphans -v
 docker compose up -d --build
 ```
 ### 3.3 Start the container
