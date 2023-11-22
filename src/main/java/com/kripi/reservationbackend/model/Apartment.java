@@ -24,7 +24,7 @@ public class Apartment {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name="apartmentType", nullable=false)
-	private ApartmentType type;
+	private ApartmentType apartmentType;
 	
 	/* ADDRESS COLUMNS */
 	@Column(name="streetName", length=45)
@@ -51,4 +51,7 @@ public class Apartment {
 	
 	@Column(name="roomBathroomCount")
 	private Integer roomBathroomCount;
+
+	@Column(name="description")
+	private String description;
 }

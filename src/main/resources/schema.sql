@@ -13,6 +13,7 @@ CREATE TABLE apartments (
   rentAmount FLOAT NOT NULL,
   area FLOAT NOT NULL,
   apartmentType VARCHAR(45) NOT NULL,
+  description TEXT DEFAULT "",
   
   -- address
   streetName VARCHAR(45),
