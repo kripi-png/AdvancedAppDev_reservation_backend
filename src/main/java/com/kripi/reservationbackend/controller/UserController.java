@@ -40,12 +40,15 @@ public class UserController {
         try {
             /* service.loadUserByUsername throws UsernameNotFoundException if user does not exist
             * therefore, we can cancel if it succeeds and create a new user if it throws */
-            UserDetails userDetails = service.loadUserByUsername(userInfo.getUsername());
+            UserDetails userDetails = service.loadUserByUsername(userInfo.getEmail());
             System.out.println("Username already exists " + userDetails.getUsername());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists!");
         } catch (UsernameNotFoundException e) {
             /* If loadUserByUsername threw UsernameNotFoundException, create new error*/
-            System.out.println("New user submission: " + userInfo.getUsername());
+            System.out.println("New user submission: " + userInfo.getEmail());
+            if (userInfo.getRoles() == null) {
+                userInfo.setRoles("ROLE_USER");
+            }
             return service.addUser(userInfo);
         }
     }
@@ -53,11 +56,11 @@ public class UserController {
     @PostMapping("/login")
     public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         /* Returns a JWT token for provided username and password */
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
         if (authentication.isAuthenticated()) {
             Map<String, Object> claims = new HashMap<>();
             claims.put("id", ((UserInfoDetails) authentication.getPrincipal()).getId());
-            return jwtService.generateToken(authRequest.getUsername(), claims);
+            return jwtService.generateToken(authRequest.getEmail(), claims);
         } else {
             throw new UsernameNotFoundException("User not found with credentials");
         }
