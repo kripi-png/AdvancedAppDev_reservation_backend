@@ -29,16 +29,78 @@ public class ApplicationsController {
         this.apartmentRepository = apartmentRepository;
     }
 
-    @GetMapping
-    // GET /applications
-    public @ResponseBody Iterable<Application> getAllApplications() {
-        return applicationRepository.findAll();
-    }
-
     @GetMapping("/{id}")
     // GET /applications/:id
     public @ResponseBody Optional<Application> getApartmentById(@PathVariable Integer id) {
         return applicationRepository.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    // PUT /applications:id
+    public ResponseEntity<ApiResponse<Application>> updateApartmentById(@PathVariable Integer id, @RequestBody Application applicationData, Authentication authentication) {
+        try {
+            UserInfoDetails userInfoDetails = (UserInfoDetails) authentication.getPrincipal();
+            UserInfo user = userInfoDetails.getUserInfo();
+            Optional<Application> possibleApplication = applicationRepository.findById(id);
+
+            if (possibleApplication.isEmpty()) {
+                System.out.println("No application exists with id " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ApiResponse<>(false, "No application exists with id"));
+            }
+
+            Application applicationInDB = possibleApplication.get();
+            /* only allow updates from the user who created the appliction */
+            if (!user.getUserId().equals(applicationInDB.getUserId())) {
+                System.out.println("Applications: unauthorized update attempt");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ApiResponse<>(false, "Not authorized to update the application"));
+            }
+            /* save application with the new message */
+            applicationInDB.setMessage(applicationData.getMessage());
+            applicationRepository.save(applicationInDB);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Application updated successfully"));
+        } catch (Exception e) {
+            System.out.println("Unknown exception when updating an application: " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Failed to update an application."));
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    // DELETE /applications/:id
+    public ResponseEntity<ApiResponse<Application>> deleteApplicationById(@PathVariable Integer id, Authentication authentication) {
+        try {
+            UserInfoDetails userInfoDetails = (UserInfoDetails) authentication.getPrincipal();
+            UserInfo user = userInfoDetails.getUserInfo();
+            Optional<Application> possibleApplication = applicationRepository.findById(id);
+
+            if (possibleApplication.isEmpty()) {
+                System.out.println("No application exists with id " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ApiResponse<>(false, "No application exists with id"));
+            }
+
+            Application applicationInDB = possibleApplication.get();
+            /* only allow deletion by the user who created the appliction */
+            if (!user.getUserId().equals(applicationInDB.getUserId())) {
+                System.out.println("Applications: unauthorized deletion attempt");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ApiResponse<>(false, "Not authorized to delete the application"));
+            }
+            applicationRepository.deleteById(id);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Application deleted successfully"));
+        } catch (Exception e) {
+            System.out.println("Unknown exception when deleting an application: " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Failed to delete an application."));
+        }
+    }
+
+    @GetMapping
+    // GET /applications
+    public @ResponseBody Iterable<Application> getAllApplications() {
+        return applicationRepository.findAll();
     }
 
     @PostMapping
@@ -60,7 +122,7 @@ public class ApplicationsController {
         } catch (DataIntegrityViolationException e) {
             System.out.println("Missing data when creating an apartment: " + e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse<>(false, "Failed to create an apartment: one or more required field was missing a value: idfk"));
+                    .body(new ApiResponse<>(false, "Failed to create an apartment: one or more required field was missing a value."));
         } catch (Exception e) {
             System.out.println("Unknown exception when creating an application: " + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
