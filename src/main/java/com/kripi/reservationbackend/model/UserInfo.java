@@ -32,4 +32,8 @@ public class UserInfo {
 
     @Column(name = "roles")
     private String roles;
+
+    public String getFullName() {
+        return "".concat(firstName).concat(" ").concat(lastName);
+    }
 }
