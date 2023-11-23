@@ -23,7 +23,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
-public class UserController {
+public class AuthController {
 
     @Autowired
     private UserInfoService service;
