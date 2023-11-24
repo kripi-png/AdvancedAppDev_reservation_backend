@@ -1,6 +1,6 @@
 package com.kripi.reservationbackend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,8 +20,8 @@ public class UserInfo {
     @Column(name = "email", nullable = false)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password", nullable = false)
-    @JsonIgnore
     private String password;
 
     @Column(name = "firstName", nullable = false)

@@ -1,81 +1,50 @@
 package com.kripi.reservationbackend.controller;
 
-import com.kripi.reservationbackend.config.AuthRequest;
+import com.kripi.reservationbackend.config.ApiResponse;
 import com.kripi.reservationbackend.config.UserInfoDetails;
-import com.kripi.reservationbackend.service.JwtService;
+import com.kripi.reservationbackend.model.Application;
 import com.kripi.reservationbackend.model.UserInfo;
-import com.kripi.reservationbackend.service.UserInfoService;
+import com.kripi.reservationbackend.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserInfoService service;
+    private final UserInfoRepository userInfoRepository;
 
     @Autowired
-    private JwtService jwtService;
+    public UserController(UserInfoRepository userInfoRepository) {
+        this.userInfoRepository = userInfoRepository;
+    }
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @PostMapping("/register")
-    public String addNewUser(@RequestBody UserInfo userInfo) {
-        /* Accepts username, password, and list of roles
-        * if username already exists in database, cancel
-        * otherwise save user to database */
+    @GetMapping("/me/applications")
+    public ResponseEntity<ApiResponse<Map<String, List<Application>>>> getMyApplications(Authentication authentication) {
         try {
-            /* service.loadUserByUsername throws UsernameNotFoundException if user does not exist
-            * therefore, we can cancel if it succeeds and create a new user if it throws */
-            UserDetails userDetails = service.loadUserByUsername(userInfo.getEmail());
-            System.out.println("Username already exists " + userDetails.getUsername());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists!");
-        } catch (UsernameNotFoundException e) {
-            /* If loadUserByUsername threw UsernameNotFoundException, create new error*/
-            System.out.println("New user submission: " + userInfo.getEmail());
-            if (userInfo.getRoles() == null) {
-                userInfo.setRoles("ROLE_USER");
-            }
-            return service.addUser(userInfo);
+            UserInfoDetails userInfoDetails = (UserInfoDetails) authentication.getPrincipal();
+            UserInfo user = userInfoDetails.getUserInfo();
+
+            List<Application> userSentApplications = userInfoRepository.findUserSentApplications(user.getUserId());
+            List<Application> applicationsForUserApartments = userInfoRepository.findApplicationsForUserApartments(user.getUserId());
+
+            Map<String, List<Application>> allApplications = new HashMap<>();
+            allApplications.put("userSentApplications", userSentApplications);
+            allApplications.put("applicationsForUserApartments", applicationsForUserApartments);
+            return ResponseEntity.ok(new ApiResponse<>(true, allApplications));
+        } catch (Exception e) {
+            System.out.println("Unknown exception when fetching user applications: " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Failed to fetch user applications."));
         }
     }
-
-    @PostMapping("/login")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        /* Returns a JWT token for provided username and password */
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
-        if (authentication.isAuthenticated()) {
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("id", ((UserInfoDetails) authentication.getPrincipal()).getId());
-            return jwtService.generateToken(authRequest.getEmail(), claims);
-        } else {
-            throw new UsernameNotFoundException("User not found with credentials");
-        }
-    }
-
-    @GetMapping("/user/userProfile")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-    public String userProfile() {
-        return "Welcome to User Profile";
-    }
-
-    @GetMapping("/admin/adminProfile")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String adminProfile() {
-        return "Welcome to Admin Profile";
-    }
-
 }

@@ -43,6 +43,7 @@ CREATE TABLE rented_apartments (
 CREATE TABLE applications (
   applicationId INTEGER NOT NULL AUTO_INCREMENT,
   message TEXT NOT NULL,
+  status VARCHAR(20) DEFAULT "PENDING",
   userId INTEGER NOT NULL,
   apartmentId INTEGER NOT NULL,
   

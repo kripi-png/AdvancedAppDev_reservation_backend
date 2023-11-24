@@ -8,6 +8,7 @@ import lombok.Data;
 @Table(name = "apartments")
 @Data
 public class Apartment {
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "apartmentId", nullable=false)
