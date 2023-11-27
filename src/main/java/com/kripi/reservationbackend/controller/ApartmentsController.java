@@ -63,5 +63,81 @@ public class ApartmentsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new ApiResponse<>(false, "Failed to create an apartment."));
 		}
+		
+		@PutMapping("/{id}")
+    // PUT /apartments/:id
+    public ResponseEntity<ApiResponse<Apartment>> updateApartmentById(@PathVariable Integer id, @RequestBody Apartment apartmentData, Authentication authentication) {
+        try {
+            UserInfoDetails userInfoDetails = (UserInfoDetails) authentication.getPrincipal();
+            UserInfo user = userInfoDetails.getUserInfo();
+            Optional<Apartment> possibleApartment = apartmentRepository.findById(id);
+
+            if (possibleApartment.isEmpty()) {
+                System.out.println("No apartment exists with id " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ApiResponse<>(false, "No apartment exists with id"));
+            }
+
+            Apartment apartmentInDB = possibleApartment.get();
+            /* only allow updates from the owner of the apartment */
+            if (!user.getUserId().equals(apartmentInDB.getOwner().getUserId())) {
+                System.out.println("Apartments: unauthorized update attempt");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ApiResponse<>(false, "Not authorized to update the apartment"));
+            }
+
+            /* update apartment details */
+            apartmentInDB.setRentAmount(apartmentData.getRentAmount());
+            apartmentInDB.setArea(apartmentData.getArea());
+            apartmentInDB.setApartmentType(apartmentData.getApartmentType());
+
+            apartmentRepository.save(apartmentInDB);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Apartment updated successfully"));
+        } catch (Exception e) {
+            System.out.println("Unknown exception when updating an apartment: " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Failed to update an apartment."));
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    // DELETE /apartments/:id
+    public ResponseEntity<ApiResponse<Apartment>> deleteApartmentById(@PathVariable Integer id, Authentication authentication) {
+        try {
+            UserInfoDetails userInfoDetails = (UserInfoDetails) authentication.getPrincipal();
+            UserInfo user = userInfoDetails.getUserInfo();
+            Optional<Apartment> possibleApartment = apartmentRepository.findById(id);
+
+            if (possibleApartment.isEmpty()) {
+                System.out.println("No apartment exists with id " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ApiResponse<>(false, "No apartment exists with id"));
+            }
+
+            Apartment apartmentInDB = possibleApartment.get();
+            /* only allow deletion by the owner of the apartment */
+            if (!user.getUserId().equals(apartmentInDB.getOwner().getUserId())) {
+                System.out.println("Apartments: unauthorized deletion attempt");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ApiResponse<>(false, "Not authorized to delete the apartment"));
+            }
+
+            apartmentRepository.deleteById(id);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Apartment deleted successfully"));
+        } catch (Exception e) {
+            System.out.println("Unknown exception when deleting an apartment: " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Failed to delete an apartment."));
+        }
+    }
+
+    private String getMissingFields(Apartment apartmentData) {
+        StringBuilder missingFields = new StringBuilder();
+        if (apartmentData.getOwner() == null) missingFields.append("ownerId, ");
+        if (apartmentData.getRentAmount() == null) missingFields.append("rentAmount, ");
+        if (apartmentData.getArea() == null) missingFields.append("area, ");
+        if (apartmentData.getApartmentType() == null) missingFields.append("apartmentType, ");
+
+   		}
 	}
 }
