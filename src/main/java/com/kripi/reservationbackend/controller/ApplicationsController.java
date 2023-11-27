@@ -4,9 +4,11 @@ import com.kripi.reservationbackend.config.ApiResponse;
 import com.kripi.reservationbackend.config.UserInfoDetails;
 import com.kripi.reservationbackend.model.Apartment;
 import com.kripi.reservationbackend.model.Application;
+import com.kripi.reservationbackend.model.RentEntry;
 import com.kripi.reservationbackend.model.UserInfo;
 import com.kripi.reservationbackend.repository.ApartmentRepository;
 import com.kripi.reservationbackend.repository.ApplicationRepository;
+import com.kripi.reservationbackend.repository.RentRepository;
 import com.kripi.reservationbackend.utils.ApplicationStatus;
 import com.kripi.reservationbackend.utils.ApplicationStatusUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +27,13 @@ public class ApplicationsController {
     private final ApplicationRepository applicationRepository;
     private final ApartmentRepository apartmentRepository;
 
+    private final RentRepository rentRepository;
+
     @Autowired
-    public ApplicationsController(ApplicationRepository applicationRepository, ApartmentRepository apartmentRepository) {
+    public ApplicationsController(ApplicationRepository applicationRepository, ApartmentRepository apartmentRepository, RentRepository rentRepository) {
         this.applicationRepository = applicationRepository;
         this.apartmentRepository = apartmentRepository;
+        this.rentRepository = rentRepository;
     }
 
     @GetMapping("/{id}")
@@ -107,8 +112,6 @@ public class ApplicationsController {
         }
     }
 
-
-
     @PostMapping("/{id}")
     // POST /applications/:id?status=<accept | decline>
     public ResponseEntity<ApiResponse<Application>> changeApplicationStatus(@PathVariable Integer id, @RequestParam ApplicationStatusUpdate status, Authentication authentication) {
@@ -173,6 +176,12 @@ public class ApplicationsController {
             applicationData.setStatus(ApplicationStatus.PENDING);
             applicationData.setApartment(apartment.get());
             Application application = applicationRepository.save(applicationData);
+
+            RentEntry rentEntry = new RentEntry();
+            rentEntry.setApartment(apartment.get());
+            rentEntry.setUser(user);
+            rentRepository.save(rentEntry);
+
             return ResponseEntity.ok(new ApiResponse<>(true, application));
         } catch (DataIntegrityViolationException e) {
             System.out.println("Missing data when creating an apartment: " + e);

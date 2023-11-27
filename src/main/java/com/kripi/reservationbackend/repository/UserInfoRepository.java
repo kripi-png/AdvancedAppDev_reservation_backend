@@ -1,5 +1,6 @@
 package com.kripi.reservationbackend.repository;
 
+import com.kripi.reservationbackend.model.Apartment;
 import com.kripi.reservationbackend.model.Application;
 import com.kripi.reservationbackend.model.UserInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,14 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Integer> {
             "JOIN fetch a.apartment ap " +
             "WHERE ap.owner.userId = :userId")
     List<Application> findApplicationsForUserApartments(@Param("userId") Integer userId);
+
+    @Query("SELECT a FROM Apartment a " +
+            "JOIN fetch a.owner u " +
+            "WHERE a.owner.userId = :userId")
+    List<Apartment> findUserOwnedApartments(@Param("userId") Integer userId);
+
+    @Query("SELECT ap FROM RentEntry r " +
+            "JOIN Apartment ap ON ap.apartmentId = r.apartment.apartmentId " +
+            "WHERE r.user.userId = :userId")
+    List<Apartment> findApartmentsRentedByUser(Integer userId);
 }

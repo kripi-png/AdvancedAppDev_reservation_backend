@@ -2,6 +2,7 @@ package com.kripi.reservationbackend.controller;
 
 import com.kripi.reservationbackend.config.ApiResponse;
 import com.kripi.reservationbackend.config.UserInfoDetails;
+import com.kripi.reservationbackend.model.Apartment;
 import com.kripi.reservationbackend.model.Application;
 import com.kripi.reservationbackend.model.UserInfo;
 import com.kripi.reservationbackend.repository.UserInfoRepository;
@@ -47,4 +48,46 @@ public class UserController {
                     .body(new ApiResponse<>(false, "Failed to fetch user applications."));
         }
     }
+
+    @GetMapping("/me/apartments")
+    // GET /users/me/apartments
+    public ResponseEntity<ApiResponse<List<Apartment>>> getMyApartments(Authentication authentication) {
+        try {
+            UserInfoDetails userInfoDetails = (UserInfoDetails) authentication.getPrincipal();
+            UserInfo user = userInfoDetails.getUserInfo();
+            List<Apartment> apartments = userInfoRepository.findUserOwnedApartments(user.getUserId());
+
+            return ResponseEntity.ok(new ApiResponse<>(true, apartments));
+        } catch (Exception e) {
+            System.out.println("Unknown exception when fetching user apartments: " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Failed to fetch user apartments."));
+        }
+    }
+
+    @GetMapping("/me/renting_pay")
+    // GET /users/me/renting_pay
+    public ResponseEntity<ApiResponse<List<Apartment>>> getMyRentedApartments(Authentication authentication) {
+        try {
+            UserInfoDetails userInfoDetails = (UserInfoDetails) authentication.getPrincipal();
+            UserInfo user = userInfoDetails.getUserInfo();
+            List<Apartment> apartments = userInfoRepository.findApartmentsRentedByUser(user.getUserId());
+
+            return ResponseEntity.ok(new ApiResponse<>(true, apartments));
+        } catch (Exception e) {
+            System.out.println("Unknown exception when fetching user rented (paying) apartments: " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Failed to fetch rented apartments"));
+        }
+    }
+
+    /*@GetMapping("/me/renting_gain")
+    public String getMyEarningApartments(Authentication authentication) {
+        try {
+
+        } catch (Exception e) {
+
+        }
+        return "";
+    }*/
 }

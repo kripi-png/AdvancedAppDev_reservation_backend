@@ -32,10 +32,11 @@ CREATE TABLE apartments (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE rented_apartments (
-    userId INT NOT NULL,
-    apartmentId INT NOT NULL,
-    -- composite primary key as that is enough to identify a row
-    PRIMARY KEY (userId, apartmentId),
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    userId INTEGER NOT NULL,
+    apartmentId INTEGER NOT NULL,
+
+    PRIMARY KEY (id),
     FOREIGN KEY (userId) REFERENCES users (userId) ON DELETE CASCADE,
     FOREIGN KEY (apartmentId) REFERENCES apartments (apartmentId) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
