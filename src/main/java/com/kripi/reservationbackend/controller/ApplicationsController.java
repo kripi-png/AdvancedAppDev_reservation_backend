@@ -26,7 +26,6 @@ public class ApplicationsController {
 
     private final ApplicationRepository applicationRepository;
     private final ApartmentRepository apartmentRepository;
-
     private final RentRepository rentRepository;
 
     @Autowired
@@ -140,11 +139,18 @@ public class ApplicationsController {
             }
             if (status == ApplicationStatusUpdate.accept) {
                 applicationInDB.setStatus(ApplicationStatus.ACCEPTED);
+                /* create a rental entry and save it to database */
+                RentEntry rentEntry = new RentEntry();
+                /* set entry's user and apartment to those mentioned in the application */
+                rentEntry.setApartment(applicationInDB.getApartment());
+                rentEntry.setUser(applicationInDB.getUser());
+                rentRepository.save(rentEntry);
             } else if (status == ApplicationStatusUpdate.decline) {
                 applicationInDB.setStatus(ApplicationStatus.DECLINED);
             } else {
                 throw new Exception("Applications: status change failed");
             }
+
             applicationRepository.save(applicationInDB);
             return ResponseEntity.ok(new ApiResponse<>(true, "Application status changed successfully"));
         } catch (Exception e) {
@@ -176,11 +182,6 @@ public class ApplicationsController {
             applicationData.setStatus(ApplicationStatus.PENDING);
             applicationData.setApartment(apartment.get());
             Application application = applicationRepository.save(applicationData);
-
-            RentEntry rentEntry = new RentEntry();
-            rentEntry.setApartment(apartment.get());
-            rentEntry.setUser(user);
-            rentRepository.save(rentEntry);
 
             return ResponseEntity.ok(new ApiResponse<>(true, application));
         } catch (DataIntegrityViolationException e) {
